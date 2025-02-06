@@ -1,53 +1,61 @@
 import streamlit as st
+import pandas as pd
 from openai import OpenAI
 
 # Show title and description.
-st.title("📄 Document question answering")
+st.title("📄 Bilingual Terms Extractor")
 st.write(
-    "Upload a document below and ask a question about it – GPT will answer! "
-    "To use this app, you need to provide an OpenAI API key, which you can get [here](https://platform.openai.com/account/api-keys). "
+    "Upload an English-German (bilingual) document below to extract relevant terms bilingually into a structured table."
 )
 
-# Ask user for their OpenAI API key via `st.text_input`.
-# Alternatively, you can store the API key in `./.streamlit/secrets.toml` and access it
-# via `st.secrets`, see https://docs.streamlit.io/develop/concepts/connections/secrets-management
+# Ask user for their OpenAI API key
 openai_api_key = st.text_input("OpenAI API Key", type="password")
 if not openai_api_key:
     st.info("Please add your OpenAI API key to continue.", icon="🗝️")
 else:
-
     # Create an OpenAI client.
     client = OpenAI(api_key=openai_api_key)
-
-    # Let the user upload a file via `st.file_uploader`.
-    uploaded_file = st.file_uploader(
-        "Upload a document (.txt or .md)", type=("txt", "md")
-    )
-
-    # Ask the user for a question via `st.text_area`.
-    question = st.text_area(
-        "Now ask a question about the document!",
-        placeholder="Can you give me a short summary?",
-        disabled=not uploaded_file,
-    )
-
-    if uploaded_file and question:
-
-        # Process the uploaded file and question.
+    
+    # Let the user upload a file
+    uploaded_file = st.file_uploader("Upload a document (.txt or .md)", type=("txt", "md"))
+    
+    if uploaded_file:
+        # Read and decode the uploaded file
         document = uploaded_file.read().decode()
-        messages = [
-            {
-                "role": "user",
-                "content": f"Here's a document: {document} \n\n---\n\n {question}",
-            }
-        ]
-
-        # Generate an answer using the OpenAI API.
-        stream = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=messages,
-            stream=True,
+        
+        # Define system message for structured extraction
+        system_prompt = (
+            "Extract bilingual terms from the provided bilingual document into a table with the following columns: "
+            "Term (English), Term Language (English), Number (singular/plural), Gender (neutral), POS (NOUN/ADJ/VERB), "
+            "Editable by terminologist (TRUE), Translatable (TRUE), Description (blank), Translation (German)."
         )
-
-        # Stream the response to the app using `st.write_stream`.
-        st.write_stream(stream)
+        
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": f"Document: {document}"}
+        ]
+        
+        # Generate response from OpenAI API
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=messages
+        )
+        
+        # Extract content from response
+        extracted_text = response.choices[0].message.content.strip()
+        
+        # Convert extracted text into a DataFrame (assuming CSV-like output)
+        try:
+            from io import StringIO
+            df = pd.read_csv(StringIO(extracted_text))
+        except Exception as e:
+            st.error("Failed to process extracted terms. Ensure the document is properly formatted.")
+            st.stop()
+        
+        # Display extracted table
+        st.write("### Extracted Bilingual Terms")
+        st.dataframe(df)
+        
+        # Allow downloading as CSV
+        csv = df.to_csv(index=False)
+        st.download_button("Download Extracted Terms", csv, "bilingual_terms.csv", "text/csv")
