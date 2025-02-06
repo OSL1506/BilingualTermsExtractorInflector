@@ -21,15 +21,16 @@ else:
     
     if uploaded_file:
         # Read and decode the uploaded file
-        document = uploaded_file.read().decodegit status()
+        document = uploaded_file.read().decode()
         
         # Define system message for structured extraction
         system_prompt = (
-            "Extract bilingual terms from the provided bilingual document into a CSV-formatted table with the following columns: "
-            "Term (English), Term Language (English), Number (singular/plural), Gender (neutral), POS (NOUN/ADJ/VERB), "
-            "Editable by terminologist (TRUE), Translatable (TRUE), Description (blank), Translation (German). "
+            "Extract bilingual terms from the provided bilingual document into a CSV-formatted table with the following columns: Term (English), Term Language (English), Number (singular/plural), Gender (neutral), POS (NOUN/ADJ/VERB), "
+            "Editable by terminologist (TRUE), Translatable (TRUE), Description (blank), Translation (German)."
             "Extract both nouns and adjectives. Identify the word type of each term as either noun or adjective. "
-            "Include compound words (e.g., 'tax reduction measures') as well as single words. For nouns, generate inflections: if a singular form is extracted, also add its plural, genitive singular, and genitive plural forms in separate rows right below the respective extracted term in the CSV, and vice versa for plural forms. Example: term 'owner' is extracted, add row below with 'owners' (plural form), then another row with 'owner's (genitive singular), then another row with 'owners'' (genitive plural), etc."
+            "Extract also compound words (e.g., 'tax reduction measures') as well as single words."
+            "For nouns, generate inflections: if a singular form is extracted, also add its plural in a separate row right below the respective extracted term. if a plural form is extracted, also add its singular in a separate row right below the respective extracted term."
+            "Doublecheck that each term and its number are correct. Example: if extracted term 'window' is labeled as 'Plural', change term to its actual plural form 'windows'."
             "Ensure the output is strictly in CSV format with commas separating values. "
         )
         
