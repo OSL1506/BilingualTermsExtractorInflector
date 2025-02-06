@@ -1,19 +1,3 @@
-# 📄 Document question answering template
+# 📄 Bilingual Terms Extractor
 
-A simple Streamlit app that answers questions about an uploaded document via OpenAI's GPT-3.5.
-
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://document-question-answering-template.streamlit.app/)
-
-### How to run it on your own machine
-
-1. Install the requirements
-
-   ```
-   $ pip install -r requirements.txt
-   ```
-
-2. Run the app
-
-   ```
-   $ streamlit run streamlit_app.py
-   ```
+Upload a bilingual English-German .txt document below to extract relevant terms along with their corresponding German translations. Nouns will be inflected (singular/plural). Output will be a .csv with the following column headers will be: Term | Term Language | Number | Gender | POS | Editable by terminologist | Translatable | Description | Translation (German)

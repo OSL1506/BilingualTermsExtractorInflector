@@ -21,7 +21,7 @@ else:
     
     if uploaded_file:
         # Read and decode the uploaded file
-        document = uploaded_file.read().decode()
+        document = uploaded_file.read().decodegit status()
         
         # Define system message for structured extraction
         system_prompt = (
