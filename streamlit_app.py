@@ -5,7 +5,7 @@ from openai import OpenAI
 # Show title and description.
 st.title("📄 Bilingual Terms Extractor")
 st.write(
-    "Upload a bilingual English-German .txt document below to extract relevant terms along with their corresponding German translations. Nouns will be inflected (singular/plural). Output will be a .csv with the following column headers will be: Term | Term Language | Number | Gender | POS | Editable by terminologist | Translatable | Description | Translation (German)"
+    "Upload a bilingual English-German document below to extract relevant terms along with their corresponding German translations, organized into a structured table."
 )
 
 # Ask user for their OpenAI API key
@@ -67,7 +67,7 @@ else:
         # Extract content from response
         extracted_text = response.choices[0].message.content.strip()
         
-        # Convert extracted text into a DataFrame (assuming CSV-like output)
+        # Convert extracted text into a DataFrame (assuming CSV format output)
         try:
             from io import StringIO
             df = pd.read_csv(StringIO(extracted_text))
