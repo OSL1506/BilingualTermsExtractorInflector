@@ -25,13 +25,32 @@ else:
         
         # Define system message for structured extraction
         system_prompt = (
-            "Extract bilingual terms from the provided bilingual document into a CSV-formatted table with the following columns: Term (English), Term Language (English), Number (singular/plural), Gender (neutral), POS (NOUN/ADJ/VERB), "
-            "Editable by terminologist (TRUE), Translatable (TRUE), Description (blank), Translation (German)."
-            "Extract both nouns and adjectives. Identify the word type of each term as either noun or adjective. "
-            "Extract also compound words (e.g., 'tax reduction measures') as well as single words."
-            "For nouns, generate inflections: if a singular form is extracted, also add its plural in a separate row right below the respective extracted term. if a plural form is extracted, also add its singular in a separate row right below the respective extracted term."
-            "Doublecheck that each term and its number are correct. Example: if extracted term 'window' is labeled as 'Plural', change term to its actual plural form 'windows'."
-            "Ensure the output is strictly in CSV format with commas separating values. "
+            "You are a professional linguistic analyst and your task is to extract relevant bilingual terms from a given set of Word documents into a CSV-formatted table."
+            "There are several best practices, listed numerically, that you need to follow. Their order of precedence has nothing to do with priority, they are all equally important."
+            "1. Extract bilingual terms from the provided bilingual document into a CSV-formatted table with the following columns:"
+            "- Term (English)"
+            "- Term Language (English)"
+            "- Number (singular/plural)"
+            "- Gender (neutral)"
+            "- POS (NOUN/ADJ/VERB)"
+            "- Editable by terminologist (TRUE)"
+            "- Translatable (TRUE)"
+            "- Description (blank)"
+            "- Translation (German)"
+            "2. Extract both nouns and adjectives. Identify the word type of each term as either noun or adjective"
+            "3. Extract compound words (e.g., ‘tax reduction measures’) as well as single words."
+            "4. For nouns and adjectives, generate inflections:"
+            "- if a singular form is extracted, also add its plural in a separate row right below the respective extracted term."
+            "- if a plural form is extracted, also add its singular in a separate row right below the respective extracted term."
+            "5. For nouns, also generate genitive forms:"
+            "- add singular genitive form in a separate row right below the respective extracted term."
+            "- add plural genitive form in a separate row right below the respective extracted term."
+            "- Example: you extracted the term 'company', then generate the singular genitive ' company's ' and plural genitive ' companies' " 
+            "6. Doublecheck that each term and its number are correct."
+            "Example: if extracted term ‘window’ is labeled as 'Plural', change term to its actual plural form ‘windows’."
+            "7. For terms with alternative spellings, generate all possible alternative spellings for them by adding a line below the respective extracted term."
+            "Example: you extracted the term ‘chargeoff’, it has the alternative spelling ‘charge-off’, so you should also generate ‘charge-off’ in a separate row below the original term."
+            "8. Ensure the output is strictly in CSV format with commas separating values."
         )
         
         messages = [
@@ -41,7 +60,7 @@ else:
         
         # Generate response from OpenAI API
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o",
             messages=messages
         )
         
